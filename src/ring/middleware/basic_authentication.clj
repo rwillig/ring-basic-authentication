@@ -41,8 +41,9 @@
   [request auth-fn]
   (let [auth ((:headers request) "authorization")
         cred (and auth (decode-base64 (last (re-find #"^Basic (.*)$" auth))))
-        [user pass] (and cred (s/split (str cred) #":" 2))]
-    (assoc request :basic-authentication (and cred (auth-fn (str user) (str pass))))))
+        [user pass] (and cred (s/split (str cred) #":" 2))
+        auth-result (auth-fn (str user) (str pass) request)]
+    (assoc request :basic-authentication auth-result)))
 
 (defn authentication-failure
   "Returns an authentication failure response, which defaults to a
